@@ -1,0 +1,7 @@
+{
+    "widgetSpec": {
+        "id": "real-estate-scraper-architecture",
+        "height": "600px",
+        "prompt": "Objective: Visualize a web scraping data pipeline using a flow diagram.\nData State: initialValues: none.\nStrategy: Standard Layout.\nLibraries: Mermaid.\nInputs:\n- None (Static Diagram)\nBehavior: Render a top-down flowchart showing three main stages. Stage 1: Scheduled Trigger (e.g., Cron Job/GitHub Actions). Stage 2: Python Web Scraper (BeautifulSoup parsing Ikman/Patpat). Stage 3: Data Storage (e.g., SQLite or Google Sheets). Stage 4: Web Dashboard (e.g., Streamlit, React, or plain HTML) displaying the listings."
+    }
+}
