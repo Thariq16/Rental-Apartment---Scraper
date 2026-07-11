@@ -1,49 +1,213 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Dehiwala Rental Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Rental Dashboard | Colombo 6</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary-color: #6366f1;
+            --accent-color: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         body {
-            font-family: sans-serif;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        #listings {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1, #10b981);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+            color: #fff;
+        }
+
+        .price-container {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 20px;
         }
 
         .price {
-            color: green;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 0;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-sizing: border-box;
+        }
+
+        .btn:hover {
+            background: #6366f1;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .loader {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
     </style>
 </head>
 
 <body>
-    <h1>Daily Dehiwala Rentals</h1>
-    <div id="listings"></div>
+    <header>
+        <h1>Curated Rentals</h1>
+        <p class="subtitle">Dehiwala & Wellawatta &bull; 2 Beds &bull; 2 Baths &bull; Unfurnished</p>
+    </header>
+    
+    <div id="listings">
+        <div class="loader">Fetching latest premium listings...</div>
+    </div>
 
     <script>
-        // Fetch the JSON file generated by the Python scraper
         fetch('listings.json')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('listings');
+                container.innerHTML = ''; // Clear loader
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><h2>No listings found today.</h2><p>Check back tomorrow for fresh updates.</p></div>';
+                    return;
+                }
+
                 data.forEach(item => {
                     container.innerHTML += `
                         <div class="card">
-                            <h3>${item.title}</h3>
-                            <p class="price">${item.price}</p>
-                            <a href="${item.link}" target="_blank">View Listing</a>
+                            <div>
+                                <h3>${item.title}</h3>
+                                <div class="price-container">
+                                    <p class="price">${item.price}</p>
+                                </div>
+                                <p class="meta">Scraped on: ${item.date_scraped}</p>
+                            </div>
+                            <a href="${item.link}" target="_blank" class="btn">View on Ikman</a>
                         </div>
                     `;
                 });
+            })
+            .catch(err => {
+                const container = document.getElementById('listings');
+                container.innerHTML = '<div class="empty-state"><h2>Error loading listings.</h2><p>Please ensure listings.json exists.</p></div>';
             });
     </script>
 </body>
