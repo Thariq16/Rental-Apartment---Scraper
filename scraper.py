@@ -77,7 +77,7 @@ def scrape_listings():
                         'title': title,
                         'price': display_price,
                         'link': link,
-                        'date_scraped': datetime.now().strftime("%Y-%m-%d")
+                        'date_scraped': datetime.now().strftime("%Y-%m-%d %I:%M %p")
                     })
             
     return listings
