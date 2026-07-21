@@ -179,7 +179,7 @@
     </div>
 
     <script>
-        fetch('listings.json')
+        fetch('listings.json?t=' + new Date().getTime(), { cache: 'no-store' })
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('listings');
