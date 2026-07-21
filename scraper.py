@@ -59,7 +59,7 @@ def scrape_listings():
             text_lower = item.text.lower()
             link_lower = link.lower()
             
-            # Filter 1: Strict Location Check (Skip promoted ads from Ja-Ela, Hantana, etc.)
+            # Filter 1: Strict Location Check (Skip promoted ads from outside the target area)
             if not any(loc in text_lower or loc in link_lower for loc in target_locations):
                 continue
 
@@ -68,13 +68,9 @@ def scrape_listings():
                 if any(kw in text_lower for kw in upper_floor_keywords):
                     continue
             
-            # Filter 3: Furnishing check (Exclude Fully Furnished)
-            if 'fully furnished' in text_lower or 'fully-furnished' in text_lower:
-                continue
-            if 'furnished' in text_lower and not ('unfurnished' in text_lower or 'semi' in text_lower):
-                continue
+            # NOTE: Furnishing filter has been completely removed to capture all furnished types.
 
-            # Filter 4: Price check (Under 135,000 LKR)
+            # Filter 3: Price check (Under 135,000 LKR)
             price_match = re.search(r'Rs ([\d,]+)(?: /month)?', item.text)
             if price_match:
                 price_str = price_match.group(1).replace(',', '')
@@ -98,4 +94,4 @@ if __name__ == "__main__":
     with open('listings.json', 'w', encoding='utf-8') as f:
         json.dump(new_listings, f, indent=4, ensure_ascii=False)
 
-    print(f"Scraped {len(new_listings)} strict local listings.")
+    print(f"Scraped {len(new_listings)} strict local listings, including furnished properties.")
